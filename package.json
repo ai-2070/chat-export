@@ -1,17 +1,35 @@
 {
-  "name": "chat-export-to-markdown",
+  "name": "@ai2070/chat-export",
   "version": "1.0.0",
-  "description": "Convert ChatGPT JSON exports to markdown files",
+  "description": "Convert ChatGPT and Claude JSON exports to markdown files",
   "type": "module",
   "main": "dist/cli.js",
   "bin": {
     "chat-export": "./dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/cli.js",
     "dev": "tsx src/cli.ts"
   },
+  "keywords": [
+    "chatgpt",
+    "claude",
+    "ai",
+    "export",
+    "markdown",
+    "converter"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LZL0/chat-export-to-markdown.git"
+  },
+  "author": "LZL0",
   "dependencies": {
     "commander": "^12.1.0",
     "sanitize-filename": "^1.6.3",
