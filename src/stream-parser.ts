@@ -1,9 +1,9 @@
 import { createReadStream } from "fs";
-import { pipeline } from "stream/promises";
 import streamArray from "stream-json/streamers/stream-array.js";
 import type { Conversation } from "./types.js";
 import type { ClaudeConversation } from "./claude-types.js";
 import { normalizeClaudeConversation } from "./claude-normalizer.js";
+import { resolveImages } from "./image-resolver.js";
 
 function isClaudeConversation(obj: unknown): obj is ClaudeConversation {
   return (
@@ -22,13 +22,25 @@ export async function* parseConversations(
 
   source.pipe(stream);
 
-  for await (const data of stream) {
-    const value = (data as { key: number; value: unknown }).value;
+  try {
+    for await (const data of stream) {
+      const value = (data as { key: number; value: unknown }).value;
 
-    if (isClaudeConversation(value)) {
-      yield normalizeClaudeConversation(value);
-    } else {
-      yield value as Conversation;
+      let conv: Conversation;
+      if (isClaudeConversation(value)) {
+        conv = normalizeClaudeConversation(value);
+      } else {
+        conv = value as Conversation;
+      }
+      conv.imageMap = await resolveImages(conv, filePath);
+      yield conv;
     }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("Top-level object should be an array")) {
+      process.stderr.write(`  Skipping ${filePath} (not a conversation array)\n`);
+      return;
+    }
+    throw err;
   }
 }

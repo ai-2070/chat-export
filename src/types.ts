@@ -7,6 +7,8 @@ export interface Conversation {
   default_model_slug: string;
   mapping: Record<string, MappingNode>;
   is_archived: boolean;
+  /** Maps asset_pointer URIs to resolved image file info */
+  imageMap?: Map<string, { sourceDir: string; filename: string }>;
 }
 
 export interface MappingNode {

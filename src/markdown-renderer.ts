@@ -21,7 +21,7 @@ export function renderMarkdown(
 
   // Messages
   for (const msg of messages) {
-    lines.push(renderMessage(msg));
+    lines.push(renderMessage(msg, conversation.imageMap));
     lines.push("");
     lines.push("---");
     lines.push("");
@@ -30,9 +30,12 @@ export function renderMarkdown(
   return lines.join("\n");
 }
 
-function renderMessage(msg: Message): string {
+function renderMessage(
+  msg: Message,
+  imageMap?: Map<string, { sourceDir: string; filename: string }>
+): string {
   const heading = getMessageHeading(msg);
-  const body = renderContent(msg);
+  const body = renderContent(msg, imageMap);
   return `## ${heading}\n\n${body}`;
 }
 
@@ -54,7 +57,10 @@ function getMessageHeading(msg: Message): string {
   return role.charAt(0).toUpperCase() + role.slice(1);
 }
 
-function renderContent(msg: Message): string {
+function renderContent(
+  msg: Message,
+  imageMap?: Map<string, { sourceDir: string; filename: string }>
+): string {
   const content = msg.content;
 
   if (content.content_type === "text" && content.parts) {
@@ -70,7 +76,7 @@ function renderContent(msg: Message): string {
       content.parts
         .map((part) => {
           if (typeof part === "string") return part;
-          return renderMultimodalPart(part as MultimodalPart);
+          return renderMultimodalPart(part as MultimodalPart, imageMap);
         })
         .filter(Boolean)
         .join("\n")
@@ -96,9 +102,16 @@ function renderContent(msg: Message): string {
   return "*[unsupported content type: " + content.content_type + "]*";
 }
 
-function renderMultimodalPart(part: MultimodalPart): string {
+function renderMultimodalPart(
+  part: MultimodalPart,
+  imageMap?: Map<string, { sourceDir: string; filename: string }>
+): string {
   if (typeof part === "string") return part;
   if (part.asset_pointer) {
+    const resolved = imageMap?.get(part.asset_pointer);
+    if (resolved) {
+      return `![Image](./images/${resolved.filename})`;
+    }
     return `![Image](${part.asset_pointer})`;
   }
   return "";

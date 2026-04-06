@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, writeFile, copyFile } from "fs/promises";
 import { join } from "path";
 import sanitize from "sanitize-filename";
 import type { Conversation, OutputOptions } from "./types.js";
@@ -40,6 +40,7 @@ export async function writeConversations(
         process.stderr.write(`  [dry-run] ${filename} (${messages.length} messages)\n`);
       } else {
         await writeFile(join(options.outputDir, filename), markdown, "utf-8");
+        await copyImages(conv, options);
       }
 
       if (options.verbose) {
@@ -82,6 +83,7 @@ async function writeSingleFile(
       }
 
       parts.push(renderMarkdown(conv, messages));
+      await copyImages(conv, options);
       written++;
     } catch (err) {
       errors++;
@@ -154,6 +156,29 @@ function generateFilename(
 
   const filename = count === 0 ? `${base}.md` : `${base}-${count + 1}.md`;
   return sanitize(filename);
+}
+
+async function copyImages(
+  conv: Conversation,
+  options: OutputOptions
+): Promise<void> {
+  if (!conv.imageMap || conv.imageMap.size === 0) return;
+
+  const imagesDir = join(options.outputDir, "images");
+  await mkdir(imagesDir, { recursive: true });
+
+  for (const [, { sourceDir, filename }] of conv.imageMap) {
+    const src = join(sourceDir, filename);
+    const dest = join(imagesDir, filename);
+
+    try {
+      await copyFile(src, dest);
+    } catch {
+      if (options.verbose) {
+        process.stderr.write(`  Warning: could not copy image ${filename}\n`);
+      }
+    }
+  }
 }
 
 function slugify(text: string): string {

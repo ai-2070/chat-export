@@ -52,6 +52,12 @@ npx @ai2070/chat-export conversations.json --single-file
 
 The format is detected automatically. You can mix both formats in a single run.
 
+## Images
+
+ChatGPT exports include uploaded images alongside the conversation JSON files. These are automatically detected, copied to an `images/` folder in the output directory, and referenced with relative paths in the markdown so they render inline.
+
+Claude exports do not include image files — only metadata about uploads. Image references in Claude conversations are preserved as-is.
+
 ## License
 
 [Apache-2.0](LICENSE)
