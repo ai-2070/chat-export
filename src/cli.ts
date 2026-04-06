@@ -11,7 +11,7 @@ const program = new Command();
 
 program
   .name("chat-export")
-  .description("Convert ChatGPT JSON exports to markdown files")
+  .description("Convert ChatGPT and Claude JSON exports to markdown files")
   .version("1.0.0")
   .argument("<paths...>", "JSON files or directories containing JSON files")
   .option("-o, --output <dir>", "Output directory", "./output")
