@@ -1,14 +1,9 @@
 import { createReadStream } from "fs";
 import { pipeline } from "stream/promises";
-import { PassThrough, Transform } from "stream";
-import pkg from "stream-json";
-import StreamArrayPkg from "stream-json/streamers/StreamArray.js";
+import streamArray from "stream-json/streamers/stream-array.js";
 import type { Conversation } from "./types.js";
 import type { ClaudeConversation } from "./claude-types.js";
 import { normalizeClaudeConversation } from "./claude-normalizer.js";
-
-const { parser } = pkg;
-const { streamArray } = StreamArrayPkg;
 
 function isClaudeConversation(obj: unknown): obj is ClaudeConversation {
   return (
@@ -23,12 +18,11 @@ export async function* parseConversations(
   filePath: string
 ): AsyncGenerator<Conversation> {
   const source = createReadStream(filePath, { encoding: "utf-8" });
-  const jsonParser = parser();
-  const arrayStreamer = streamArray();
+  const stream = streamArray.withParserAsStream();
 
-  source.pipe(jsonParser).pipe(arrayStreamer);
+  source.pipe(stream);
 
-  for await (const data of arrayStreamer) {
+  for await (const data of stream) {
     const value = (data as { key: number; value: unknown }).value;
 
     if (isClaudeConversation(value)) {
@@ -37,7 +31,4 @@ export async function* parseConversations(
       yield value as Conversation;
     }
   }
-
-  // Ensure cleanup
-  source.destroy();
 }

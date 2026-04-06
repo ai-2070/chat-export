@@ -31,14 +31,14 @@
   },
   "author": "LZL0",
   "dependencies": {
-    "commander": "^12.1.0",
-    "sanitize-filename": "^1.6.3",
-    "stream-json": "^1.8.0"
+    "commander": "^14.0.0",
+    "sanitize-filename": "^1.6.4",
+    "stream-json": "^2.1.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@types/stream-json": "^1.7.7",
-    "tsx": "^4.19.0",
+    "@types/node": "^24.0.0",
+    "@types/stream-json": "^1.7.8",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.0"
   }
 }
