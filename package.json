@@ -1,0 +1,26 @@
+{
+  "name": "chat-export-to-markdown",
+  "version": "1.0.0",
+  "description": "Convert ChatGPT JSON exports to markdown files",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "chat-export": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "sanitize-filename": "^1.6.3",
+    "stream-json": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/stream-json": "^1.7.7",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
