@@ -3,5 +3,9 @@ dist/
 *.json
 !package.json
 !tsconfig.json
+
+input/
+
 output/
-test-output/
+*-output/
+output-*/
